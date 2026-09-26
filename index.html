@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MicroTask USDT - Earn Crypto</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="logo">MicroTask<span>USDT</span></div>
+      <div class="wallet-pill" onclick="switchView('wallet')">
+        <span id="wallet-balance">0.0000</span> USDT
+      </div>
+    </header>
+
+    <main class="app-content">
+      <!-- Tasks View -->
+      <section id="view-tasks" class="view active">
+        <div class="filter-tabs">
+          <button class="filter-tab active" onclick="filterJobs('all')">All</button>
+          <button class="filter-tab" onclick="filterJobs('telegram')">Telegram</button>
+          <button class="filter-tab" onclick="filterJobs('twitter')">Twitter</button>
+          <button class="filter-tab" onclick="filterJobs('instagram')">Instagram</button>
+          <button class="filter-tab" onclick="filterJobs('facebook')">Facebook</button>
+          <button class="filter-tab" onclick="filterJobs('whatsapp')">WhatsApp</button>
+        </div>
+        <div id="jobs-list" class="jobs-list"></div>
+      </section>
+
+      <!-- Wallet View -->
+      <section id="view-wallet" class="view">
+        <div class="card">
+          <p class="text-muted">Available Balance</p>
+          <h1 id="wallet-main-balance" class="balance-title">0.0000 USDT</h1>
+        </div>
+        <div class="card">
+          <h2>Withdraw Funds (BEP20)</h2>
+          <p class="text-muted" style="margin-bottom: 16px;">Limits: Min $0.50 - Max $100.00</p>
+          <div class="form-group">
+            <input type="number" id="wd-amount" class="form-control" placeholder="Amount (Min $0.50)">
+            <input type="text" id="wd-address" class="form-control" placeholder="BEP20 Wallet Address (0x...)">
+            <button class="btn" onclick="processWithdrawal()">Submit Withdrawal</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Post View -->
+      <section id="view-post" class="view">
+        <div class="card">
+          <h2>Post a New Microjob</h2>
+          <p class="text-muted" style="margin-bottom: 8px;">Create tasks for users to complete.</p>
+          <p class="notice-text">যারা পোস্ট করবেন তারা এডমিনের সাথে কন্টাক্ট করে এখানে পাবলিশ করতে পারেন।</p>
+          <div class="form-group">
+            <div class="form-group">
+              <label class="form-label">Platform</label>
+              <select id="post-platform" class="form-control">
+                <option value="telegram">Telegram</option>
+                <option value="twitter">Twitter / X</option>
+                <option value="instagram">Instagram</option>
+                <option value="facebook">Facebook</option>
+                <option value="whatsapp">WhatsApp</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Task Type</label>
+              <select id="post-type" class="form-control">
+                <option value="Join">Join</option>
+                <option value="Follow">Follow</option>
+                <option value="Like">Like</option>
+                <option value="Comment">Comment</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Task Title</label>
+              <input type="text" id="post-title" class="form-control" placeholder="e.g. Join Telegram Group">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reward (USDT)</label>
+              <input type="number" step="0.001" id="post-reward" class="form-control" placeholder="e.g. 0.005">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Task Link URL</label>
+              <input type="url" id="post-link" class="form-control" placeholder="https://...">
+            </div>
+            <button class="btn" onclick="postNewJob()">Publish Job</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- History View -->
+      <section id="view-history" class="view">
+        <div class="card">
+          <h2>Task History</h2>
+          <p class="text-muted" style="margin-bottom: 12px;">Your completed and submitted micro-jobs.</p>
+          <div id="history-list" class="jobs-list">
+            <div class="card" style="text-align: center; color: var(--text-muted); padding: 24px;">No history yet.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Referral View -->
+      <section id="view-referral" class="view">
+        <div class="card">
+          <h2>Invite & Earn 10% Commission</h2>
+          <p class="text-muted" style="margin-bottom: 16px;">Share your link. Earn 10% live USDT whenever your referrals complete micro-jobs!</p>
+          <div class="form-group">
+            <label class="form-label">Your Referral Link</label>
+            <div class="ref-input-box">
+              <input type="text" id="ref-link-input" class="form-control" readonly>
+              <button class="btn" onclick="copyReferralLink()" style="width: auto; padding: 0 16px;">Copy</button>
+            </div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="card stat-card">
+            <p class="text-muted">Total Referrals</p>
+            <h3 id="ref-count">0</h3>
+          </div>
+          <div class="card stat-card">
+            <p class="text-muted">Referral Earnings</p>
+            <h3 id="ref-earnings" style="color: var(--accent);">0.0000 USDT</h3>
+          </div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <button class="btn btn-outline" onclick="simulateReferralActivity()">Simulate Referral Activity</button>
+          <p class="text-muted" style="font-size: 12px; margin-top: 8px;">Test live 10% commission when your referral earns.</p>
+        </div>
+      </section>
+
+      <!-- Admin View -->
+      <section id="view-admin" class="view">
+        <div class="card">
+          <h2>Admin Approval Panel</h2>
+          <p class="text-muted" style="margin-bottom: 16px;">Review user proof submissions and approve to release USDT reward.</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px;">
+            <span>Pending Submissions: <strong id="admin-pending-count" style="color: var(--accent);">0</strong></span>
+          </div>
+          <div id="admin-submissions-list" class="jobs-list">
+            <div class="card" style="text-align: center; color: var(--text-muted); padding: 24px;">No pending submissions.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="app-nav">
+      <button class="nav-item active" onclick="switchView('tasks')">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Tasks</span>
+      </button>
+      <button class="nav-item" onclick="switchView('wallet')">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="16" cy="12" r="2"/></svg>
+        <span>Wallet</span>
+      </button>
+      <button class="nav-item" onclick="switchView('post')">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>Post</span>
+      </button>
+      <button class="nav-item" onclick="switchView('history')">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+        <span>History</span>
+      </button>
+      <button class="nav-item" onclick="switchView('referral')">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Referral</span>
+      </button>
+      <button class="nav-item" onclick="switchView('admin')">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2l9 4-9 4-9-4 9-4z"/><path d="M3 10l9 4 9-4"/><path d="M3 16l9 4 9-4"/></svg>
+        <span>Admin</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Verification Task Modal -->
+  <div id="verify-modal" class="modal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 id="modal-title">Complete Task</h3>
+        <button onclick="closeModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">Task Link (Admin)</label>
+        <a id="modal-link" href="#" target="_blank" class="form-control" style="display: block; text-decoration: none; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; font-weight: 600;">Open Link in App</a>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">Profile Link / Username</label>
+        <input type="text" id="task-profile-input" class="form-control" placeholder="e.g. @your_username or profile url">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 24px;">
+        <label class="form-label">Upload Proof Screenshot</label>
+        <input type="file" id="task-screenshot-input" class="form-control" accept="image/*">
+      </div>
+
+      <button class="btn" onclick="verifyTaskCompletion()">Submit Proof</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
